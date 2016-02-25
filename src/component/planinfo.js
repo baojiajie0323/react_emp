@@ -27,6 +27,7 @@ const Planinfo = React.createClass({
           预案执行
           </Button>
         </div>
+        <span style={{margin:'30px 4%',width:'92%'}} className="ant-line" ></span>
         <div id='planstep'>
         </div>
       </div>

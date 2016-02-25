@@ -2,6 +2,14 @@
   height: 100%;
 }
 
+.ant-line {
+  margin: 4px 0;
+  color: #999;
+  display: inline-block;
+  height: 1px;
+  background: #ccc;
+}
+
 #react-content{
   margin: 20px 30px;
   height: 100%;
@@ -95,5 +103,5 @@
 }
 
 #planstep{
-  
+
 }

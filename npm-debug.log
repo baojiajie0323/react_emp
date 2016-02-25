@@ -1,0 +1,30 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Users\\bjj\\AppData\\Roaming\\npm\\node_modules\\cnpm\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   '--userconfig=C:\\Users\\bjj\\.cnpmrc',
+1 verbose cli   '--disturl=https://npm.taobao.org/mirrors/node',
+1 verbose cli   '--cache=C:\\Users\\bjj\\.cnpm',
+1 verbose cli   '--registry=https://registry.npm.taobao.org',
+1 verbose cli   '--node-gyp=C:\\Users\\bjj\\AppData\\Roaming\\npm\\node_modules\\cnpm\\node_modules\\pangyp\\bin\\node-gyp.js',
+1 verbose cli   'run',
+1 verbose cli   'start' ]
+2 info using npm@2.13.2
+3 info using node@v4.3.1
+4 verbose stack Error: missing script: start
+4 verbose stack     at run (C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\lib\run-script.js:142:19)
+4 verbose stack     at C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\lib\run-script.js:58:5
+4 verbose stack     at C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\node_modules\read-package-json\read-json.js:345:5
+4 verbose stack     at checkBinReferences_ (C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\node_modules\read-package-json\read-json.js:309:45)
+4 verbose stack     at final (C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\node_modules\read-package-json\read-json.js:343:3)
+4 verbose stack     at then (C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\node_modules\read-package-json\read-json.js:113:5)
+4 verbose stack     at C:\Users\bjj\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\node_modules\read-package-json\read-json.js:300:12
+4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (evalmachine.<anonymous>:380:3)
+5 verbose cwd d:\react_emp
+6 error Windows_NT 10.0.10586
+7 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Users\\bjj\\AppData\\Roaming\\npm\\node_modules\\cnpm\\node_modules\\npm\\bin\\npm-cli.js" "--userconfig=C:\\Users\\bjj\\.cnpmrc" "--disturl=https://npm.taobao.org/mirrors/node" "--cache=C:\\Users\\bjj\\.cnpm" "--registry=https://registry.npm.taobao.org" "--node-gyp=C:\\Users\\bjj\\AppData\\Roaming\\npm\\node_modules\\cnpm\\node_modules\\pangyp\\bin\\node-gyp.js" "run" "start"
+8 error node v4.3.1
+9 error npm  v2.13.2
+10 error missing script: start
+11 error If you need help, you may report this error at:
+11 error     <https://github.com/npm/npm/issues>
+12 verbose exit [ 1, true ]
