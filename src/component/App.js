@@ -9,7 +9,26 @@ const tabContent = [
   <span><Icon type="clock-circle-o" />历史查询</span>
 ];
 
+function Request(argname){
+    var url = location.href;
+    var arrStr = url.substring(url.indexOf("?")+1).split("&");
+    for(var i =0;i<arrStr.length;i++)
+    {
+        var loc = arrStr[i].indexOf(argname+"=");
+        if(loc!=-1)
+        {
+            return arrStr[i].replace(argname+"=","").replace("?","");
+            break;
+        }
+
+    }
+    return "";
+}
+
 const App = React.createClass({
+  componentDidMount(){
+    alert(Request('userid'));
+  },
   render() {
     return (
       <Tabs defaultActiveKey="1">
