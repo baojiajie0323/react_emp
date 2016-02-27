@@ -9,10 +9,11 @@
     "atool-build": "0.5.0",
     "babel-plugin-antd": "^0.2.0",
     "es3ify-loader": "^0.1.0",
-    "react": "~0.14.6",
-    "react-dom": "~0.14.6",
     "flux": "^2.0.3",
-    "keymirror": "^0.1.1"
+    "keymirror": "^0.1.1",
+    "object-assign": "^4.0.1",
+    "react": "~0.14.6",
+    "react-dom": "~0.14.6"
   },
   "devDependencies": {
     "dora": "0.2.x",

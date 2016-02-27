@@ -3,6 +3,8 @@ import { Tabs, Icon } from 'antd';
 const TabPane = Tabs.TabPane;
 const Planpanel = require('./planpanel');
 const Hispanel = require('./histroypanel');
+const Action = require('../flux/actions/vssActions');
+const Store = require('../flux/stores/vssStore');
 
 const tabContent = [
   <span><Icon type="book" />预案总览</span>,
@@ -20,14 +22,14 @@ function Request(argname){
             return arrStr[i].replace(argname+"=","").replace("?","");
             break;
         }
-
     }
     return "";
 }
 
 const App = React.createClass({
   componentDidMount(){
-    alert(Request('userid'));
+    Store.setuserid(Request('userid'));
+    Action.getAllPlan();
   },
   render() {
     return (

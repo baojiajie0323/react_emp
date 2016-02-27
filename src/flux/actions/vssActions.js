@@ -2,6 +2,7 @@
 
 const AJAXTIMEOUT = 10*1000;
 var AppDispatcher = require('../AppDispatcher');
+var Store = require('../stores/vssStore');
 
 var VssActions = {
   getAllPlan:function(){
@@ -10,7 +11,8 @@ var VssActions = {
   		type: 'POST',
   		timeout: AJAXTIMEOUT,
   		data:({
-        command:'getallplangroup'
+        command:'getallplangroup',
+        userid:Store.getuserid()
   		}),
   		error: function(xhr, textStatus, thrownError){
         alert('error1');
@@ -24,7 +26,8 @@ var VssActions = {
         type: 'POST',
         timeout: AJAXTIMEOUT,
         data:({
-          command:'getallplan'
+          command:'getallplan',
+          userid:Store.getuserid()
         }),
         error: function(xhr, textStatus, thrownError){
           alert('error2');

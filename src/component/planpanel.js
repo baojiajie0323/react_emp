@@ -5,11 +5,10 @@ const ButtonGroup = Button.Group;
 const createForm = Form.create;
 const FormItem = Form.Item;
 const Planinfo = require('./planinfo');
-const Action = require('../flux/actions/vssActions');
 
 var Planpanel = React.createClass({
   componentDidMount() {
-    Action.getAllPlan();
+
   },
   getValidateStatus(field) {
     const { isFieldValidating, getFieldError, getFieldValue } = this.props.form;

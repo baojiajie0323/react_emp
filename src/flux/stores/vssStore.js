@@ -3,7 +3,6 @@
 var AppDispatcher = require('../AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
-var Util = require('../../util');
 var EventConst = require('../event-const');
 var ActionEvent = EventConst.ActionEvent;
 var StoreEvent = EventConst.StoreEvent;
@@ -29,6 +28,7 @@ var _puRecProgress = {
 
 var _login = false;
 
+var _userid = 0;
 /**
  * store
  */
@@ -40,6 +40,14 @@ var VssStore = assign({}, EventEmitter.prototype, {
     playtime:5,
     version:6,
     login:7,
+  },
+
+  setuserid: function(userid){
+    _userid = userid;
+  },
+
+  getuserid: function(){
+    return _userid;
   },
 
   setIsLoggedIn: function(login) {
@@ -130,28 +138,6 @@ var VssStore = assign({}, EventEmitter.prototype, {
   },
 
 
-  addRecFile:function(result){
-    for (var i = 0; i < result.num; ++i) {
-      var file = result.files[i];
-      if (!file) continue;
-
-      var start = Util.paramTimeToJsTime(file.start);
-      var end = Util.paramTimeToJsTime(file.end);
-
-      var date = Util.timeToDate(start);
-      var keyDate = date.getTime();
-      var dateFiles = _recfile[keyDate];
-      if (!dateFiles) {
-        _recfile[keyDate] = {};
-        dateFiles = _recfile[keyDate];
-      }
-      dateFiles[file.recIndexId] = file;
-    }
-
-    if (result.finished) {
-      this.emitChange(this.notifytype.recfile);
-    }
-  },
 
   getRecFile:function(){
     return _recfile;
@@ -167,55 +153,6 @@ var VssStore = assign({}, EventEmitter.prototype, {
     }
 
     return ret;
-  },
-
-  getRecFilesByDate: function(d) {
-    var date = Util.timeToDate(d);
-    return _recfile[date.getTime()];
-  },
-
-  getRecFileByTime: function(time) {
-    for (var i = -1; i < 2; ++i) {
-      var temp = new Date(time);
-      temp.setDate(temp.getDate() + i);
-
-      var files = this.getRecFilesByDate(temp);
-      if (!files) continue;
-
-      for (var index in files) {
-        var file = files[index];
-        if (!file) continue;
-
-        var start = Util.paramTimeToJsTime(file.start);
-        var end = Util.paramTimeToJsTime(file.end);
-
-        if (start <= time && time <= end) {
-          return file;
-        }
-      }
-    }
-  },
-
-  getNextRecFileByTime: function(time) {
-    for (var i = -1; i < 2; ++i) {
-      var temp = new Date(time);
-      temp.setDate(temp.getDate() + i);
-
-      var files = this.getRecFilesByDate(temp);
-      if (!files) continue;
-
-      for (var index in files) {
-        var file = files[index];
-        if (!file) continue;
-
-        var start = Util.paramTimeToJsTime(file.start);
-        var end = Util.paramTimeToJsTime(file.end);
-
-        if (time <= start) {
-          return file;
-        }
-      }
-    }
   },
 
   setPuRecPlayProgress: function(channel, progress) {
