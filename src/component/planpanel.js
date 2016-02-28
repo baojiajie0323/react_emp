@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Icon,Row,Col,Button,Modal,Popconfirm,Form,Input } from 'antd';
+import { Menu, Icon,Row,Col,Button,Modal,Popconfirm,Form,Input,Alert,QueueAnim } from 'antd';
 const SubMenu = Menu.SubMenu;
 const ButtonGroup = Button.Group;
 const createForm = Form.create;
@@ -11,17 +11,25 @@ const Store = require('../flux/stores/vssStore');
 var Planpanel = React.createClass({
   componentDidMount() {
     Store.addChangeListener(Store.notifytype.planload,this.planloadfinish);
+    Store.addChangeListener(Store.notifytype.changesel,this.changesel);
   },
   getInitialState: function() {
     return {
       _plangroup: Store.getplangroup(),
       current: "4",
-      visible: false
+      visible: false,
+      stepitems:[]
     };
   },
   planloadfinish(){
     this.setState({
       _plangroup: Store.getplangroup()
+    })
+  },
+  changesel(planid){
+    this.setState({
+      _plangroup: Store.getplangroup(),
+      current:planid.toString()
     })
   },
   getValidateStatus(field) {
@@ -71,8 +79,7 @@ var Planpanel = React.createClass({
     });
   },
   sendAddPlan() {
-    alert($('#plandetail').val());
-    Action.addplan($('#planname').val(),$('#plandetail').val());
+    Action.addplan($('#planname').val(),$('#input_plandetail').val());
     this.setState({
       visible: false
     });
@@ -82,6 +89,33 @@ var Planpanel = React.createClass({
     this.setState({
       visible: false
     });
+  },
+  handleDeleteStep:function(item){
+    let items = this.state.stepitems;
+    for (var i = 0; i < items.length; i++) {
+      if(items[i].key == item){
+        items.splice(i,1);
+      }
+    }
+    this.setState({
+      stepitems:items
+    });
+  },
+  handleAddStep() {
+    let items = this.state.stepitems;
+    var keys = Date.now();
+    items.push(<Row key={keys} type="flex" justify="start">
+      <Col span="1" offset="3">
+        <Icon style={{fontSize:'16px',marginTop:'10px'}} type="tags-o" />
+      </Col>
+      <Col span="15" offset="1" >
+        <Alert message={"打电话" + keys} type="info" style={{marginLeft:'10px'}} />
+        <a onClick={function(){this.handleDeleteStep(keys)}.bind(this)} className="btndelete"><Icon type="delete" /></a>
+      </Col>
+    </Row>);
+    this.setState({
+      stepitems:items
+    })
   },
   render() {
     const { getFieldProps, getFieldError, isFieldValidating } = this.props.form;
@@ -119,10 +153,6 @@ var Planpanel = React.createClass({
 
     subarray.push(menu);
 
-
-    //console.log(submenu);
-
-
     var menu = <Menu
       onClick={this.handleClick}
       defaultOpenKeys={['groupall']}
@@ -139,12 +169,9 @@ var Planpanel = React.createClass({
             {menu}
             <div id="operatebtngroup">
               <ButtonGroup size="large">
-                <Button onClick={this.handleAddPlan} type="primary">
-                    <Icon type="plus" />
-                    增加
-                  </Button>
+                <Button onClick={this.handleAddPlan} type="primary"><Icon type="plus" />增加</Button>
                 <Button type="ghost">
-                  <Icon type="edit" />
+                  <Icon type="edit" disabled />
                   修改
                 </Button>
                 <Popconfirm title="确定要删除吗？" onConfirm={this.handledelplan}>
@@ -174,15 +201,18 @@ var Planpanel = React.createClass({
               <FormItem
                 {...formItemLayout}
                 label="预案描述：" required>
-                <Input type="textarea" placeholder="请输入预案描述" id="plandetail" rows="3" />
+                <Input type="textarea" placeholder="请输入预案描述" id="input_plandetail" rows="3" />
               </FormItem>
               <FormItem>
                 <span style={{margin:'10px 12%',width:'50%'}} className="ant-line" ></span>
-                <Button id="btnaddstep" type="primary" size='small'>
+                <Button id="btnaddstep" onClick={this.handleAddStep} type="primary" size='small'>
                   <Icon type="tags-o" />
                   新建步骤
                 </Button>
               </FormItem>
+              <QueueAnim component="ul" style={{marginTop:'-20px'}} type={['right', 'left']}>
+                {this.state.stepitems}
+              </QueueAnim>
             </Form>
           </Modal>
         </Row>

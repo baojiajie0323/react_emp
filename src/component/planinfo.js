@@ -15,7 +15,7 @@ const Planinfo = React.createClass({
         name:'null',
         createusername:'null',
         createtime:'null',
-        detail:'null',        
+        detail:'null',
       }
     }
     return (

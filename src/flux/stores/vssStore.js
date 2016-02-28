@@ -16,6 +16,7 @@ var _plan = [];
 var VssStore = assign({}, EventEmitter.prototype, {
   notifytype:{
     planload:1,
+    changesel:2,
   },
 
   setuserid: function(userid){
@@ -52,11 +53,22 @@ var VssStore = assign({}, EventEmitter.prototype, {
     return _plan;
   },
 
+  addplan: function(plan){
+    for (var i = 0; i < _plan.length; i++) {
+      if(plan.id == _plan[i].id){
+        return false;
+      }
+    }
+    _plan.push(plan);
+    this.emit(this.notifytype.changesel,plan.id);
+    //this.emitChange(this.notifytype.changesel);
+  },
+
   delplan: function(planid){
     for (var i = 0; i < _plan.length; i++) {
       if(planid == _plan[i].id){
         _plan.splice(i,1);
-        this.emitChange(this.notifytype.planload);
+        this.emit(this.notifytype.changesel,_plan[0].id);
         break;
       }
     }

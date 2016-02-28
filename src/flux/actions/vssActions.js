@@ -49,7 +49,33 @@ var VssActions = {
       });
     })
   },
+  queryplan:function(planid){
+    $.ajax({
+  		url: '../users/postCommand',
+  		type: 'POST',
+  		timeout: AJAXTIMEOUT,
+  		data:({
+        command:'queryplan',
+        planid:planid,
+        userid:Store.getuserid()
+  		}),
+  		error: function(xhr, textStatus, thrownError){
+        //alert('error1');
+        message.error('与服务器建立连接失败');
+  		},
+  		success: function(response) {
+        if(response.code == 0){
+          alert(JSON.stringify(response.data[0]));
+          Store.addplan(response.data[0]);
+        }else{
+          message.error(response.msg);
+        }
+  		}
+  	});
+  },
   addplan:function(planname,plandetail){
+
+    var _this2 = this;
     $.ajax({
   		url: '../users/postCommand',
   		type: 'POST',
@@ -66,7 +92,9 @@ var VssActions = {
   		},
   		success: function(response) {
         if(response.code == 0){
-          Store.addplan(planid);
+          _this2.queryplan(response.data.insertId);
+          //alert(JSON.stringify(response));
+          //Store.addplan(planid);
         }else{
           message.error(response.msg);
         }
