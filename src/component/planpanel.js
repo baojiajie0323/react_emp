@@ -109,7 +109,7 @@ var Planpanel = React.createClass({
         <Icon style={{fontSize:'16px',marginTop:'10px'}} type="tags-o" />
       </Col>
       <Col span="15" offset="1" >
-        <Alert message={"打电话" + keys} type="info" style={{marginLeft:'10px'}} />
+        <Alert message={"打电话" + new Date().getMinutes() + new Date().getSeconds()} type="info" style={{marginLeft:'10px'}} />
         <a onClick={function(){this.handleDeleteStep(keys)}.bind(this)} className="btndelete"><Icon type="delete" /></a>
       </Col>
     </Row>);
