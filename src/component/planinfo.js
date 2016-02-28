@@ -1,22 +1,33 @@
 import React from 'react';
 import { Icon,Row,Col,Button,Alert,Tooltip  } from 'antd';
 
+const Store = require('../flux/stores/vssStore');
+
 const Planinfo = React.createClass({
   getInitialState() {
     return {
     };
   },
   render() {
+    var plan = Store.getplanbyid(this.props.planid);
+    if(plan == null){
+      plan = {
+        name:'null',
+        createusername:'null',
+        createtime:'null',
+        detail:'null',        
+      }
+    }
     return (
       <div>
         <div id="plandetail">
           <div id="planlogo">
             <Icon type="book"/>
-            <p id="text_planname">系统瘫痪</p>
+            <p id="text_planname">{plan.name}</p>
           </div>
-          <p id="text_createuser">创建人：<span>root</span></p>
-          <p id="text_createtime">创建时间：<span>2015-02-25 16:16:23</span></p>
-          <p id="text_plandetail">预案描述：<span>系统无法正常运行，需要及时解决</span></p>
+          <p id="text_createuser">创建人：<span>{plan.createusername}</span></p>
+          <p id="text_createtime">创建时间：<span>{plan.createtime}</span></p>
+          <p id="text_plandetail">预案描述：<span>{plan.detail}</span></p>
 
           <Tooltip placement="top" title="您可以点击进行预演">
             <Button id="btn_plantest" type="ghost" size="large">

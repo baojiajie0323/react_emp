@@ -5,10 +5,24 @@ const ButtonGroup = Button.Group;
 const createForm = Form.create;
 const FormItem = Form.Item;
 const Planinfo = require('./planinfo');
+const Action = require('../flux/actions/vssActions');
+const Store = require('../flux/stores/vssStore');
 
 var Planpanel = React.createClass({
   componentDidMount() {
-
+    Store.addChangeListener(Store.notifytype.planload,this.planloadfinish);
+  },
+  getInitialState: function() {
+    return {
+      _plangroup: Store.getplangroup(),
+      current: "4",
+      visible: false
+    };
+  },
+  planloadfinish(){
+    this.setState({
+      _plangroup: Store.getplangroup()
+    })
   },
   getValidateStatus(field) {
     const { isFieldValidating, getFieldError, getFieldValue } = this.props.form;
@@ -37,12 +51,6 @@ var Planpanel = React.createClass({
       callback();
     }
   },
-  getInitialState() {
-    return {
-      current: "4",
-      visible: false
-    };
-  },
   handleAddPlan() {
     this.setState({
       visible: true
@@ -53,23 +61,21 @@ var Planpanel = React.createClass({
       visible: true
     });
   },
+  handledelplan() {
+    Action.delplan(this.state.current);
+  },
   handleClick(e) {
     console.log('click ', e);
     this.setState({
       current: e.key
     });
   },
-  handleOk() {
+  sendAddPlan() {
+    alert($('#plandetail').val());
+    Action.addplan($('#planname').val(),$('#plandetail').val());
     this.setState({
-      ModalText: '对话框将在两秒后关闭',
-      confirmLoading: true
+      visible: false
     });
-    setTimeout(() => {
-      this.setState({
-        visible: false,
-        confirmLoading: false
-      });
-    }, 2000);
   },
   handleCancel() {
     console.log('点击了取消');
@@ -89,40 +95,59 @@ var Planpanel = React.createClass({
       labelCol: { span: 7 },
       wrapperCol: { span: 12 },
     };
+
+    var subarray = [];
+    for (var i = 0; i < this.state._plangroup.length; i++) {
+      var groupid = this.state._plangroup[i].id;
+      if(groupid == 1)
+        continue;
+      var key = 'group' + groupid;
+      var menu = Store.getplanlistbygroupid(groupid).map(function(plan){
+        var plankey = plan.id;
+        return <Menu.Item key={plankey}>{<span><Icon type="book" /><span>{plan.name}</span></span>}</Menu.Item>
+      });
+      var submenu =  <SubMenu key={key} title={<span><Icon type="folder" /><span>{this.state._plangroup[i].name}</span></span>}>
+      {menu}
+      </SubMenu>
+      subarray.push(submenu);
+    }
+
+    var menu = Store.getplanlistbygroupid(1).map(function(plan){
+      var plankey = plan.id;
+      return <Menu.Item key={plankey}>{<span><Icon type="book" /><span>{plan.name}</span></span>}</Menu.Item>
+    });
+
+    subarray.push(menu);
+
+
+    //console.log(submenu);
+
+
+    var menu = <Menu
+      onClick={this.handleClick}
+      defaultOpenKeys={['groupall']}
+      selectedKeys={[this.state.current]}
+      mode="inline">
+      <SubMenu key="groupall" title={<span><Icon type="folder" /><span>所有预案</span></span>}>
+        {subarray}
+      </SubMenu>
+    </Menu>
+
     return (
         <Row id="planpanel">
           <Col id="planlist" span="5" className="panel" >
-            <Menu
-              onClick={this.handleClick}
-              defaultOpenKeys={['sub1','sub3']}
-              selectedKeys={[this.state.current]}
-              mode="inline">
-              <SubMenu key="sub1" title={<span><Icon type="folder" /><span>所有预案</span></span>}>
-                <SubMenu key="sub2" title={<span><Icon type="folder" /><span>自然灾害</span></span>}>
-                  <Menu.Item key="1">{<span><Icon type="book" /><span>地震</span></span>}</Menu.Item>
-                  <Menu.Item key="2">{<span><Icon type="book" /><span>暴雪</span></span>}</Menu.Item>
-                </SubMenu>
-                <SubMenu key="sub3" title={<span><Icon type="folder" /><span>设备故障</span></span>}>
-                  <Menu.Item key="3">{<span><Icon type="book" /><span>停电</span></span>}</Menu.Item>
-                  <Menu.Item key="4">{<span><Icon type="book" /><span>系统瘫痪</span></span>}</Menu.Item>
-                </SubMenu>
-                <Menu.Item key="5">{<span><Icon type="book" /><span>犯人越狱</span></span>}</Menu.Item>
-              </SubMenu>
-            </Menu>
+            {menu}
             <div id="operatebtngroup">
               <ButtonGroup size="large">
-                <Popconfirm title="请问您要添加分组还是预案？"
-                onConfirm={this.handleAddPlan} onCancel={this.handleAddGroup} okText="预案" cancelText="分组">
-                  <Button type="primary">
+                <Button onClick={this.handleAddPlan} type="primary">
                     <Icon type="plus" />
                     增加
                   </Button>
-                </Popconfirm>
                 <Button type="ghost">
                   <Icon type="edit" />
                   修改
                 </Button>
-                <Popconfirm title="确定要删除吗？" >
+                <Popconfirm title="确定要删除吗？" onConfirm={this.handledelplan}>
                   <Button type="ghost">
                     <Icon type="delete" />
                     删除
@@ -132,12 +157,11 @@ var Planpanel = React.createClass({
             </div>
           </Col>
           <Col span="19" className="panel">
-            <Planinfo />
+            <Planinfo planid={this.state.current} />
           </Col>
           <Modal title="新建预案"
             visible={this.state.visible}
-            onOk={this.handleOk}
-            confirmLoading={this.state.confirmLoading}
+            onOk={this.sendAddPlan}
             onCancel={this.handleCancel}>
             <Form horizontal form={this.props.form}>
               <FormItem
@@ -145,12 +169,12 @@ var Planpanel = React.createClass({
                 label="预案名称："
                 hasFeedback
                 help={isFieldValidating('name') ? '校验中...' : (getFieldError('name') || []).join(', ')} required>
-                <Input {...nameProps} placeholder="请输入预案名称" />
+                <Input {...nameProps} id="planname" placeholder="请输入预案名称" />
               </FormItem>
               <FormItem
                 {...formItemLayout}
                 label="预案描述：" required>
-                <Input type="textarea" placeholder="请输入预案描述" id="control-textarea" rows="3" />
+                <Input type="textarea" placeholder="请输入预案描述" id="plandetail" rows="3" />
               </FormItem>
               <FormItem>
                 <span style={{margin:'10px 12%',width:'50%'}} className="ant-line" ></span>

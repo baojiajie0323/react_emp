@@ -7,39 +7,15 @@ var EventConst = require('../event-const');
 var ActionEvent = EventConst.ActionEvent;
 var StoreEvent = EventConst.StoreEvent;
 
-
-var _deviceinfo = [];
-var _newversion = '';
-/**
- * {
- *   date_number: {
- *     file_index: file,
- *     ...
- *   },
-*    ...
- * }
- */
-var _recfile = {};
-
-var _puRecProgress = {
-  channel: 0,
-  progress: null
-};
-
-var _login = false;
-
 var _userid = 0;
+var _plangroup = [];
+var _plan = [];
 /**
  * store
  */
 var VssStore = assign({}, EventEmitter.prototype, {
   notifytype:{
-    alarm:1,
-    deviceinfo:3,
-    recfile:4,
-    playtime:5,
-    version:6,
-    login:7,
+    planload:1,
   },
 
   setuserid: function(userid){
@@ -50,120 +26,59 @@ var VssStore = assign({}, EventEmitter.prototype, {
     return _userid;
   },
 
-  setIsLoggedIn: function(login) {
-    if (login === _login) return;
-
-    _login = login;
-    this.emitChange(this.notifytype.login);
+  updateplangroup: function(data){
+    _plangroup = data;
   },
 
-  isLoggedIn: function() {
-    return _login;
+  getplangroup: function(){
+    return _plangroup;
   },
 
-  GetDeviceInfo:function(){
-      return _deviceinfo;
-  },
-
-  AddDeviceInfo:function(info){
-    if(!info.hasOwnProperty('tagid'))
-      return;
-    var nLength = _deviceinfo.length;
-    var bFind = false;
-    for(var nIndex = 0; nIndex< nLength;nIndex++){
-      if(_deviceinfo[nIndex].tagid == info.tagid){
-        if(info.active == 1 && _deviceinfo[nIndex].active == 0){
-          newalarm(info.tagid,1,getNowFormatDate(),'');
-          this.emitChange(this.notifytype.alarm);
-        }
-        if(info.tamper == 1 && _deviceinfo[nIndex].tamper == 0){
-          newalarm(info.tagid,2,getNowFormatDate(),'');
-          this.emitChange(this.notifytype.alarm);
-        }
-        _deviceinfo[nIndex] = info;
-        bFind = true;
-        break;
+  getplangroupbyid: function(groupid){
+    for (var i = 0; i < _plangroup.length; i++) {
+      if(groupid == _plangroup[i].id){
+        return _plangroup[i];
       }
     }
-    if(!bFind){
-      _deviceinfo.push(info);
-    }
-    this.emitChange(this.notifytype.deviceinfo);
+    return null;
   },
 
-  DelDeviceInfo:function(tagid){
-    var nLength = _deviceinfo.length;
-    for(var nIndex = 0; nIndex< nLength;nIndex++){
-      if(_deviceinfo[nIndex].tagid == tagid){
-        _deviceinfo.remove(nIndex);
-        this.emitChange(this.notifytype.deviceinfo);
+  updateplan: function(data){
+    _plan = data;
+    this.emitChange(this.notifytype.planload);
+  },
+
+  getplan: function(){
+    return _plan;
+  },
+
+  delplan: function(planid){
+    for (var i = 0; i < _plan.length; i++) {
+      if(planid == _plan[i].id){
+        _plan.splice(i,1);
+        this.emitChange(this.notifytype.planload);
         break;
       }
     }
   },
 
-  HasTagid:function(tagid){
-    var nLength = _deviceinfo.length;
-    for(var nIndex = 0; nIndex< nLength;nIndex++){
-      if(_deviceinfo[nIndex].tagid == tagid){
-        return true;
+  getplanbyid :function(planid){
+    for (var i = 0; i < _plan.length; i++) {
+      if(planid == _plan[i].id){
+        return _plan[i];
       }
     }
-    return false;
+    return null;
   },
 
-  setNewVersion:function(version){
-    _newversion = version;
-    this.emitChange(this.notifytype.version);
-  },
-
-  getNewVersion:function(){
-    return _newversion;
-  },
-
-  sendEmptyTagData:function(tagid){
-    var devinfo = {
-      'tagid':tagid,
-      'devid':'',
-      'rssi2':'',
-      'serial':'',
-      'drop':'',
-      'rssi1':'',
-      'active':'',
-      'tamper':'',
-      'tampercount':'',
-      'time':'',
-    };
-    this.AddDeviceInfo(devinfo);
-  },
-
-
-
-  getRecFile:function(){
-    return _recfile;
-  },
-
-  getRecFileArray: function() {
-    var ret = [];
-
-    for (var d in _recfile) {
-      for (var i in _recfile[d]) {
-        ret.push(_recfile[d][i]);
+  getplanlistbygroupid: function(groupid){
+    var planlist = [];
+    for (var i = 0; i < _plan.length; i++) {
+      if(_plan[i].groupid == groupid){
+        planlist.push(_plan[i]);
       }
     }
-
-    return ret;
-  },
-
-  setPuRecPlayProgress: function(channel, progress) {
-    _puRecProgress.channel = channel;
-    _puRecProgress.progress = progress;
-
-    this.emitChange(this.notifytype.playtime);
-  },
-
-  getPuRecPlayProgress: function() {
-    return _puRecProgress;
+    return planlist;
   },
 
   emitChange: function(eventtype) {
